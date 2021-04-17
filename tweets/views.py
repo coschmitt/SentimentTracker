@@ -36,7 +36,7 @@ class SignUp(FormView):
 
 class SignOut(LogoutView):
     template_name = 'registration/logged_out.html'
-    success_url_allowed_hosts = "/tweets/sign-in"
+    success_url = "/tweets/sign-in"
 
 
 class SignIn(LoginView):

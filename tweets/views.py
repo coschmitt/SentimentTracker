@@ -11,9 +11,6 @@ import numpy as np
 
 from tweets.forms import SearchForm
 
-aws_access_key_id="ASIARXUC647CZM3TEXGY"
-aws_secret_access_key="brHf49eXOOyZ7TErvyN0fr4Psf/7Y068LAKuzKoq"
-aws_session_token="FwoGZXIvYXdzEBwaDNyySWVFnd9Kb/a21CLCAZV9qfmLSPeRSInJiBeDdcjD1v24NTIxg3vh0JukqlrFjpO8CU5sXcUjpXuQ1/5bxdAGDtSOozyzdEkdj8xsvMFri+o3WMAr6fR3TRBTK1GZFkxkRB1fwGV9UGaHfvtRJgt1D+754Ao9DP+OXoW0KfjQHQ1T8d3imRLvhLydMKnQoQLKZnTpzGrNvk/wH9X8OTG9igTDnyqKoP+s00DDKFpntFvQaNiUnnVeyLnf5VqLg9JcuA+CblYUrsQC9JY6zvLzKK/ClIIGMi3CKFtWNmwRwSvZU4lHpbTS2rfEo5L+jxbHzpujJCHSz0/SmMU1YMLKQ2xSZUs="
 
 
 def index(request):

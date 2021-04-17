@@ -20,7 +20,7 @@ def index(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect("/tweets/auth_home")
     else:       # Unregistered User
-        return HttpResponseRedirect("/tweets/sign-in")
+        return HttpResponseRedirect("/tweets/sign-up")
 
 
 class SignUp(FormView):
@@ -39,7 +39,7 @@ class SignUp(FormView):
 
 class SignOut(LogoutView):
     template_name = 'registration/logged_out.html'
-    success_url_allowed_hosts = "/tweets/sign-in"
+    success_url = "/tweets/sign-in"
 
 
 class SignIn(LoginView):

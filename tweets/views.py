@@ -41,15 +41,18 @@ class SignOut(LogoutView):
     template_name = 'registration/logged_out.html'
     success_url = "/tweets/sign-in"
 
+
 class AboutUs(FormView):
     success_url = "/tweets/auth_home/"
     form_class = AuthenticationForm
     template_name = "tweets/about-us.html"
 
-    def form_valid(self, form):
-        """Security check complete. Log the user in."""
-        login(self.request, form.get_user())
-        return HttpResponseRedirect("/tweets/auth_home/")
+
+class ContactUs(FormView):
+    success_url = "/tweets/auth_home/"
+    form_class = AuthenticationForm
+    template_name = "tweets/contact-us.html"
+
 
 
 class SignIn(LoginView):

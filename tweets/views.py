@@ -11,7 +11,7 @@ def index(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect("/tweets/auth_home")
     else:       # Unregistered User
-        return HttpResponseRedirect("/tweets/sign-in")
+        return HttpResponseRedirect("/tweets/sign-up")
 
 
 class SignUp(FormView):

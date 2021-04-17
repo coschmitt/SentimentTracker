@@ -31,7 +31,7 @@ class SignUp(FormView):
         login(self.request, user)
         form.save()
 
-        return HttpResponseRedirect("/stock-analyzer/auth_home")
+        return HttpResponseRedirect("/tweets/auth_home")
 
 
 class SignOut(LogoutView):

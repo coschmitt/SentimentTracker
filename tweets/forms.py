@@ -4,13 +4,13 @@ from django import forms
 class SearchForm(forms.Form):
     REGIONS = (
         ("All regions", "All regions"),
-        ('Southwest', '34.694910,-105.981320,450'),
-        ('Westcoast', '37.696473,-117.139650,450'),
-        ('Northeast', '41.474976,-76.508037,450'),
-        ('Midwest', "41.782133,-87.999337,450"),
-        ('South', '34.560107,-85.692607,450'),
-        ('Pacific Northwest', '45.582650,-119.882060,450'),
-        ('Rocky Mountains', '41.672229,-108.280497,450')
+        ('34.694910,-105.981320,450','Southwest'),
+        ('37.696473,-117.139650,450','Westcoast'),
+        ('41.474976,-76.508037,450','Northeast'),
+        ("41.782133,-87.999337,450",'Midwest'),
+        ('34.560107,-85.692607,450','South'),
+        ('45.582650,-119.882060,450','Pacific Northwest'),
+        ('41.672229,-108.280497,450','Rocky Mountains')
     )
 
     TWEET_TYPES = (

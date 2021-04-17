@@ -73,14 +73,14 @@
         {% block content %}
             <div class="jumbotron ">
                 <div class = 'container'>
-{#                    <form action="/tweets/search" method="post">#}
-{#                        {% csrf_token %}#}
-{#                        {% for field in form %}#}
-{#                            {{field|as_crispy_field}}#}
-{#                        {% endfor %}#}
-{#                        <br>#}
-{#                        <button class="button btn btn-info" type="submit"> search </button>#}
-{#                  </form>#}
+                    <form action="/tweets/search/" method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {{field|as_crispy_field}}
+                        {% endfor %}
+                        <br>
+                        <button class="button btn btn-info" type="submit"> search </button>
+                  </form>
                 </div>
             </div>
         {% endblock %}

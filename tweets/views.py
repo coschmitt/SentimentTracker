@@ -70,7 +70,8 @@ def home(request):
         return HttpResponseRedirect("/tweets/sign-in/")
     return render(request, 'tweets/home.html', context={
         'user': user,
-        'form': SearchForm()
+        'form': SearchForm(),
+        'graph': return_graph(None, None, None, None)
     })
 
 

@@ -5,6 +5,9 @@ from django.contrib.auth.views import LogoutView, LoginView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import FormView
+import matplotlib.pyplot as plt
+from io import StringIO
+import numpy as np
 
 from tweets.forms import SearchForm
 
@@ -75,6 +78,28 @@ class Search(FormView):
     template_name = 'tweets/home.html'
     success_url = "display/"
 
+    def form_valid(self, form):
+        search_value = form.cleaned_data['search']
+        return HttpResponseRedirect(self.get_success_url() + str(search_value)+'/')
 
-def display(request):
-    return render(request, 'tweets/search-results.html')
+
+def display(request, search=None):
+    context = {'graph': return_graph(search)}
+    return render(request, 'tweets/search-results.html', context)
+
+
+def return_graph(search_val):
+    print(search_val)
+    x = np.arange(0,np.pi*3,.1)
+    y = np.sin(x)
+
+    fig = plt.figure()
+    plt.plot(x,y)
+
+    imgdata = StringIO()
+    fig.savefig(imgdata, format='svg')
+    imgdata.seek(0)
+
+    data = imgdata.getvalue()
+    return data
+

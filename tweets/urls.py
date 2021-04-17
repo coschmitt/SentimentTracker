@@ -10,6 +10,6 @@ urlpatterns = [
     path("auth_home/", views.home, name="auth_home"),
     path("signout/", views.SignOut.as_view(), name='sign-out'),
     path('search/', views.Search.as_view(), name='search'),
-    path('search/display/', views.display, name='display-results')
+    path('search/display/<search>/', views.display, name='display-results')
 
 ]

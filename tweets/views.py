@@ -68,13 +68,18 @@ class Search(FormView):
     template_name = 'tweets/home.html'
     success_url = "display/"
 
+    def form_valid(self, form):
+        search_value = form.cleaned_data['search']
+        return HttpResponseRedirect(self.get_success_url() + str(search_value)+'/')
 
-def display(request):
-    context = {'graph': return_graph()}
+
+def display(request, search=None):
+    context = {'graph': return_graph(search)}
     return render(request, 'tweets/search-results.html', context)
 
-def return_graph():
 
+def return_graph(search_val):
+    print(search_val)
     x = np.arange(0,np.pi*3,.1)
     y = np.sin(x)
 

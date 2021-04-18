@@ -4,14 +4,13 @@ from tweets.graphAnalysis.woied_helpers import get_filter_choices
 class SearchForm(forms.Form):
     REGIONS = (
         ("All regions", "All regions"),
-        ('Southwest', 'Southwest'),
-        ('Westcoast', 'Westcoast'),
-        ('Eastcoast', 'Eastcoast'),
-        ('Midwest', 'Midwest'),
-        ('South', 'South'),
-        ('Northeast', 'Northeast'),
-        ('Pacific Northwest', 'Pacific Northwest'),
-        ('Rocky Mountains', 'Rocky Mountains')
+        ('34.694910,-105.981320,450','Southwest'),
+        ('37.696473,-117.139650,450','Westcoast'),
+        ('41.474976,-76.508037,450','Northeast'),
+        ("41.782133,-87.999337,450",'Midwest'),
+        ('34.560107,-85.692607,450','South'),
+        ('45.582650,-119.882060,450','Pacific Northwest'),
+        ('41.672229,-108.280497,450','Rocky Mountains')
     )
 
     TWEET_TYPES = (
@@ -42,5 +41,6 @@ class TrendsFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TrendsFilterForm, self).__init__(*args, **kwargs)
         self.fields['location'].widget.attrs['class'] = 'form-control'
+
 
 

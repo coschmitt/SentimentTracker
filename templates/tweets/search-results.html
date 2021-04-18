@@ -1,11 +1,16 @@
 <!DOCTYPE html>
+{% extends 'tweets/head.html' %}
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
 </head>
 <body>
-{{search_value}}
-    {{ graph|safe }}
+{% block content %}
+<h1>Results for:</h1>
+<h3>Search: {{search}} </h3>
+<h3>Region: {{region}}</h3>
+<h3>Date: {{end_date}}</h3>
+    {{ graph_bar|safe }} {{graph_line|safe}}
+{% endblock %}
 </body>
 </html>

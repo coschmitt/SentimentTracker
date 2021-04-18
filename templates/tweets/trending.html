@@ -13,9 +13,9 @@
         <hr>
         <div class="list-group">
             {% for trend in trends %}
-                <button type="button" class="list-group-item list-group-item-action">{{ trend.name }}</button>
+                <button type="button" class="list-group-item list-group-item-action"><a href="{% url 'display-results' trend.name 'All regions' date "mixed" %}">{{ trend.name }}</a></button>
             {% endfor %}
-        </div>
+         </div>
         {% if trends.has_other_pages %}
             <br>
             <ul class="pagination">

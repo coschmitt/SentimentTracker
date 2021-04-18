@@ -93,9 +93,7 @@ class Search(FormView):
     def form_valid(self, form):
         search = form.cleaned_data['search']
         region = form.cleaned_data['region']
-        end_date = form.cleaned_data['end_date']
-        if end_date is None:
-            end_date = date.today()
+        end_date = date.today()
         result_type = form.cleaned_data['result_type']
         return HttpResponseRedirect(self.get_success_url() + str(search) + '/'+ str(region) + '/'
                                     + str(end_date) + '/' + str(result_type) + '/')
@@ -121,7 +119,7 @@ def display(request, search=None, region=None, end_date=None, result_type=None):
                'result_type': result_type}
     return render(request, 'tweets/search-results.html', context)
 
-def return_graph(search, region, end_date, result_type):
+
 
 def display_trends(request, woeid=1):
     trends = get_trending(woeid=woeid)[0].get('trends')
@@ -139,8 +137,7 @@ def display_trends(request, woeid=1):
 
 
 
-def return_graph(search_val):
-    print(search_val)
+def return_graph(search, region, end_date, result_type):
     x = np.arange(0,np.pi*3,.1)
     y = np.sin(x)
 

@@ -20,7 +20,7 @@ class SearchForm(forms.Form):
     )
 
     search = forms.CharField(required=True)
-    region = forms.ChoiceField(choices=REGIONS, required=False)
+    region = forms.ChoiceField(choices=REGIONS, required=True)
     end_date = forms.DateField(
         input_formats=['%Y/%m/%d'], label="End date (default today): ", required=False
     )

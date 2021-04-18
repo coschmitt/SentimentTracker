@@ -31,6 +31,7 @@ class SignUp(FormView):
     form_class = UserCreationForm
     template_name = "tweets/signup.html/"
 
+    '''overriding so we can login in the user'''
     def form_valid(self, form):
         form.save()
         user = User.objects.get(username=form.data.get('username'))
@@ -74,6 +75,7 @@ class SignIn(LoginView):
         return HttpResponseRedirect("/tweets/auth_home/")
 
 
+''' Method used for returning the search form '''
 def home(request):
     user = request.user
     if not user.is_authenticated:
@@ -85,6 +87,9 @@ def home(request):
     })
 
 
+"""
+    takes in the search query and returns the graphs
+"""
 class Search(FormView):
     form_class = SearchForm
     template_name = 'tweets/home.html'
@@ -99,6 +104,9 @@ class Search(FormView):
                                     + str(end_date) + '/' + str(result_type) + '/')
 
 
+"""
+    View used for tilering the 'trends' page by location
+"""
 class FilterTrends(FormView):
     form_class = TrendsFilterForm
     template_name = "tweets/filter-trending.html"
@@ -109,7 +117,6 @@ class FilterTrends(FormView):
         return HttpResponseRedirect(self.get_success_url() + str(location)+'/')
 
 
-
 def display(request, search=None, region=None, end_date=None, result_type=None):
     context = {'graph_bar': return_graph(search, region, end_date, result_type),
                'graph_line': return_graph(search, region, end_date, result_type),
@@ -118,7 +125,6 @@ def display(request, search=None, region=None, end_date=None, result_type=None):
                'end_date': end_date,
                'result_type': result_type}
     return render(request, 'tweets/search-results.html', context)
-
 
 
 def display_trends(request, woeid=1):
@@ -136,7 +142,6 @@ def display_trends(request, woeid=1):
     return render(request, 'tweets/trending.html', context=dict(trends=trends))
 
 
-
 def return_graph(search, region, end_date, result_type):
     x = np.arange(0,np.pi*3,.1)
     y = np.sin(x)
@@ -150,4 +155,3 @@ def return_graph(search, region, end_date, result_type):
 
     data = imgdata.getvalue()
     return data
-

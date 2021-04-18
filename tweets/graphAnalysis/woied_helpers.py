@@ -1,5 +1,7 @@
 import tweepy
 
+
+# twitter API keys
 auth = tweepy.OAuthHandler("KdE45VAZRJYDcjaqHz1NYuRSb", "IqeYxJgRHr4FDdz5lktEYcNtQsQwvELMWbGIb2EAjyVQXEDgoz")
 auth.set_access_token("1252352172085383168-Rz2h4E6riMibKxFeS4xfzGgvNHy0TL",
                       "aCLAFYRNgq6zZ0laJS9Q2gbkKa1x2VPlJrvzVCe4dQ9zT")
@@ -29,10 +31,10 @@ def get_filter_choices():
     twitter_world = api.trends_available()
     places = []
     for loc in twitter_world:
-        places.append((loc['woeid'], loc['name']))
+        places.append((loc['woeid'], loc['name']))  # append the country/city name and ID number
 
-    places = sorted(places, key=lambda x: x[1])
-    return tuple(places)
+    places = sorted(places, key=lambda x: x[1])     # sort alphabetically
+    return tuple(places)                            # turn the list into a tuple for the forms choice
 
 
 

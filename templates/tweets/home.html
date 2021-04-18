@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -25,6 +26,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
             integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
             crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/7ddcd355b2.js" crossorigin="anonymous"></script>
+
     <!-- Fengyuan Chen's Datepicker -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.css" integrity="sha256-b88RdwbRJEzRx95nCuuva+hO5ExvXXnpX+78h8DjyOE=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.js" integrity="sha256-/7FLTdzP6CfC1VBAj/rsp3Rinuuu9leMRGd354hvk0k=" crossorigin="anonymous"></script>
@@ -53,13 +56,12 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" href="{% url 'about-us' %}" id="navbarDropdown" role="button" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
                             Browse
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Twitter Users</a>
-                            <a class="dropdown-item" href="#">Words</a>
+                            <a class="dropdown-item" href="{% url 'filter-trends' %}">Trending</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -82,18 +84,11 @@
                     <div class="col-6 col-sm-3">
                         {{ form.result_type|as_crispy_field }}
                     </div>
-
-                </div>
-                <hr>
-                <div class="row align-items-center">
                     <div class="col-6 col-sm-3">
-                        {{ form.end_date|as_crispy_field }}
-                    </div>
-                    <div class="col-6 col-sm-3ol">
                         {{ form.region|as_crispy_field }}
                     </div>
-
                 </div>
+                <hr>
                 <br>
                 <button class="button btn btn-info" type="submit"> search</button>
             </form>

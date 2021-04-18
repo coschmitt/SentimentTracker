@@ -1,16 +1,25 @@
 <!DOCTYPE html>
-{% extends 'tweets/head.html' %}
+{% extends 'tweets/home.html' %}
 
-<html lang="en">
-<head>
-</head>
-<body>
+
+
 {% block content %}
-<h1>Results for:</h1>
-<h3>Search: {{search}} </h3>
-<h3>Region: {{region}}</h3>
-<h3>Date: {{end_date}}</h3>
-    {{ graph_bar|safe }} {{graph_line|safe}}
+    <br>
+    <div class="container jumbotron">
+        <h1 class="display-6">Results for "{{ search }}"</h1>
+        <h6 class="display-6">Region: {{region}}</h6>
+        <h6 class="display-6">Date: {{end_date}}</h6>
+    </div>
+    <hr>
+    <div class="row align-items-center">
+        <div class="col-6">
+            {{ graph_bar|safe }}
+        </div>
+        <div class="col-6">
+            {{graph_line|safe}}
+        </div>
+
+    </div>
+
+
 {% endblock %}
-</body>
-</html>

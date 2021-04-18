@@ -52,13 +52,10 @@ def generate_graph(search, region, end_date, result_type):
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     dataf = []  # For storing dataframe of valuable information
     for i in range(0,numDays):
-        untilDate = datetime.strptime(datetime.now().strftime('%Y-%m-%d'),'%Y-%m-%d')
         keyword_tweets = api.search(q=search, rpp=100, count=numTweets, until=end_date-timedelta(days=i),
                                     result_type=result_type, region=region)
 
         # gathering info about timeline
-        # text = "" #String to store users tweets
-        # day  = "" #String to check what day of the week this tweet was posted
 
         for status in keyword_tweets:
             day = status._json["created_at"][0:3]
@@ -87,15 +84,14 @@ def generate_graph(search, region, end_date, result_type):
     positiveList = dfDay.reset_index()["positive"].tolist()
     negativeList = dfDay.reset_index()["negative%"].tolist()
 
-    # Bar graph
+    # Line graph
 
     fig1 = plt.figure()
-    plt.bar(dayList, negativeList)
+    plt.plot(dayList, negativeList)
+    plt.xlabel('Day of the Week')
     # naming the y axis
-    plt.ylabel('Percent')
-
+    plt.ylabel('Percent negativity')
     plt.title(search + ' Sentiment Analysis!')
-
     fig1 = mpld3.fig_to_html(fig1)
 
     #Line graph
@@ -109,4 +105,4 @@ def generate_graph(search, region, end_date, result_type):
     plt.title(search + ' Sentiment Analysis!')
     fig2 = mpld3.fig_to_html(fig2)
 
-    return [fig1,fig2]
+    return [fig1,fig2], overallSentiment

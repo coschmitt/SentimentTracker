@@ -8,7 +8,6 @@ from django.views.generic import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import matplotlib.pyplot as plt
-from io import StringIO
 import numpy as np
 from datetime import date
 
@@ -19,7 +18,7 @@ import datetime as datetime
 import tweepy
 import boto3
 import json
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, mpld3
 import pandas as pd
 from datetime import datetime,timedelta
 from io import StringIO
@@ -208,44 +207,43 @@ def generate_graph(search, region, end_date, result_type):
     df["positive"] = 100 * df["positive"]
     df["negative%"] = 100 * df["negative%"]
 
-    correct_order = ["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"]
     dfDay = df.groupby(['Day']).mean()
 
     dfDay = dfDay.reindex(["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"])
 
     dfDay=dfDay.fillna(0)
     print(dfDay)
+    dayList = dfDay.index.get_level_values('Day')
 
-
-    # dfDayBar = dfDay.plot.bar(legend=True)
-
-    #Bar graph
+    positiveList = dfDay.reset_index()["positive"].tolist()
+    negativeList = dfDay.reset_index()["negative%"].tolist()
+    print(dayList)
+    # Bar graph
 
     fig1 = plt.figure()
-
+    plt.bar(dayList, negativeList)
     # naming the y axis
     plt.ylabel('Percent')
 
     plt.title(search + ' Sentiment Analysis!')
 
+    fig1 = mpld3.fig_to_html(fig1)
+    # plt.plot(dayList, positiveList)
     # barGraph = plt.show()
 
     #Line graph
     # Line graph for more days
 
-    dayList = dfDay.index.get_level_values('Day')
 
-    positiveList = dfDay.reset_index()["positive"].tolist()
-    print(dayList)
-    dfDayLine = plt.plot(dayList, positiveList)
+
 
     fig2 = plt.figure()
-
+    plt.plot(dayList, positiveList)
     plt.xlabel('Day of the Week')
     # naming the y axis
     plt.ylabel('Percent positivity')
     plt.title(search + ' Sentiment Analysis!')
-
-    # lineGraph = plt.show()
+    fig2 = mpld3.fig_to_html(fig2)
 
     return [fig1,fig2]
+

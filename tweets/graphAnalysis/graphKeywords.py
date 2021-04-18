@@ -91,11 +91,12 @@ def generate_graph(search, region, end_date, result_type):
     # naming the y axis
     plt.ylabel('Percent positivity')
     plt.title(search + ' Sentiment Analysis!')
+    plt.show()
     fig2 = plt.figure()
     # lineGraph = plt.show()
     imgdata2 = StringIO()
-    fig1.savefig(imgdata1, format='svg')
-    data2 = imgdata2.seek(0)
-    print(data1)
+    fig2.savefig(imgdata1, format='svg')
+    data2 = imgdata2.seek(2)
+    print(type(fig2))
     return [fig1,fig2]
-generate_graph("hate", "", "2021-04-17", "")
+generate_graph("cocaine", "", "2021-04-17", "")

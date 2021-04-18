@@ -5,6 +5,7 @@ import json
 import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import datetime,timedelta
+import math
 
 comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
@@ -24,18 +25,13 @@ dataf = [] #For storing dataframe of valuable information
 for i in range(0,numDays):
     untilDate = datetime.strptime(datetime.now().strftime('%Y-%m-%d'),'%Y-%m-%d')
     keyword_tweets = api.search(q=search, rpp=100, count=numTweets, until = untilDate-timedelta(days = i))
-    def byteCalc(s):
-        return len(s.encode('utf-8'))
 
     #gathering info about timeline
     text = "" #String to store users tweets
     day  = "" #String to check what day of the week this tweet was posted
 
-    print(day)
+    print(len(keyword_tweets))
     for status in keyword_tweets:
-        # if status._json["created_at"][0:3]  == day and day != "":
-        #     day = status._json["created_at"][0:3]
-        #     continue
         day = status._json["created_at"][0:3]
         text = status._json["text"]
         data = json.loads(json.dumps(comprehend.detect_sentiment(Text=text, LanguageCode='en'), sort_keys=True, indent=4))
@@ -51,16 +47,24 @@ print(dataf)
 print("Negative:", negative)
 print("Positive:", positive)
 
-df = pd.DataFrame(dataf, columns=['Day', 'positive%', 'negative%'])
-print(df)
-df["positive%"] = 100 * df["positive%"]
+df = pd.DataFrame(dataf, columns=['Day', 'positive', 'negative%'])
+
+df["positive"] = 100 * df["positive"]
 df["negative%"] = 100 * df["negative%"]
-print(df.groupby(['Day']).mean())
-dfDay = df.groupby(['Day']).mean().plot.bar(legend=True)
+
+correct_order = ["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"]
+dfDay = df.groupby(['Day']).mean()
+
+dfDay = dfDay.reindex(["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"])
+
+dfDay=dfDay.fillna(0)
+print(dfDay)
+
+
+dfDayBar = dfDay.plot.bar(legend=True)
 
 #Bar graph
-#ax = df.plot.bar(x = 'Day', y='postive%', rot=0)
-#ax.axes.get_xaxis().set_visible(False)
+
 # naming the y axis
 plt.ylabel('Percent')
 plt.title(search + ' Sentiment Analysis!')
@@ -68,7 +72,13 @@ plt.show()
 
 #Line graph
 # Line graph for more days
-ax = df.plot(x='Day', y='positive%', rot=0)
+dayList = dfDay.index.get_level_values('Day')
+positiveList = dfDay.reset_index()["positive"].tolist()
+print(dayList)
+
+dfDayLine = plt.plot(dayList, positiveList)
+
+
 plt.xlabel('Day of the Week')
 # naming the y axis
 plt.ylabel('Percent positivity')

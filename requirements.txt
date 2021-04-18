@@ -4,6 +4,7 @@ botocore==1.20.53
 certifi==2020.12.5
 chardet==4.0.0
 cycler==0.10.0
+DateTime==4.3
 Django==3.2
 django-crispy-forms==1.11.2
 django-extensions==3.1.2
@@ -16,6 +17,8 @@ matplotlib==3.4.1
 numpy==1.20.2
 oauthlib==3.1.0
 pandas==1.2.4
+matplotlib~=3.3.2
+numpy~=1.18.5
 Pillow==8.2.0
 pyparsing==2.4.7
 PySocks==1.7.1
@@ -30,3 +33,13 @@ tweepy==3.10.0
 typing-extensions==3.7.4.3
 urllib3==1.26.4
 woeid==1.0.0
+DateTime~=4.3
+tweepy~=3.10.0
+boto3~=1.17.53
+pandas~=1.1.2
+urllib3==1.26.4
+woeid==1.0.0
+DateTime~=4.3
+tweepy~=3.10.0
+boto3~=1.17.53
+pandas~=1.1.2

@@ -8,12 +8,22 @@ from django.views.generic import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import matplotlib.pyplot as plt
-from io import StringIO
 import numpy as np
 from datetime import date
 
 from tweets.forms import SearchForm, TrendsFilterForm
 from tweets.graphAnalysis.woied_helpers import get_trending, get_woeid
+from tweets.forms import SearchForm
+import datetime as datetime
+import tweepy
+import boto3
+import json
+import matplotlib.pyplot as plt, mpld3
+import pandas as pd
+from datetime import datetime,timedelta
+from io import StringIO
+import math
+
 
 
 def index(request):
@@ -83,7 +93,6 @@ def home(request):
     return render(request, 'tweets/home.html', context={
         'user': user,
         'form': SearchForm(),
-        'graph': return_graph(None, None, None, None)
     })
 
 
@@ -118,8 +127,9 @@ class FilterTrends(FormView):
 
 
 def display(request, search=None, region=None, end_date=None, result_type=None):
-    context = {'graph_bar': return_graph(search, region, end_date, result_type),
-               'graph_line': return_graph(search, region, end_date, result_type),
+    graphs = generate_graph(search, region, end_date, result_type)
+    context = {'graph_bar': graphs[0],
+               'graph_line': graphs[1],
                'search': search,
                'region': region,
                'end_date': end_date,
@@ -146,12 +156,94 @@ def return_graph(search, region, end_date, result_type):
     x = np.arange(0,np.pi*3,.1)
     y = np.sin(x)
 
-    fig = plt.figure()
-    plt.plot(x,y)
 
-    imgdata = StringIO()
-    fig.savefig(imgdata, format='svg')
-    imgdata.seek(0)
+def generate_graph(search, region, end_date, result_type):
+    print(search, region, end_date, result_type)
+    comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
-    data = imgdata.getvalue()
-    return data
+    auth = tweepy.OAuthHandler("KdE45VAZRJYDcjaqHz1NYuRSb", "IqeYxJgRHr4FDdz5lktEYcNtQsQwvELMWbGIb2EAjyVQXEDgoz")
+    auth.set_access_token("1252352172085383168-Rz2h4E6riMibKxFeS4xfzGgvNHy0TL", "aCLAFYRNgq6zZ0laJS9Q2gbkKa1x2VPlJrvzVCe4dQ9zT")
+
+    api = tweepy.API(auth)
+    # user = api.get_user('joebiden')
+
+
+    api = tweepy.API(auth)
+    numTweets = 5
+    numDays = 7
+    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    dataf = [] #For storing dataframe of valuable information
+    for i in range(0,numDays):
+        untilDate = datetime.strptime(datetime.now().strftime('%Y-%m-%d'),'%Y-%m-%d')
+        print(type(end_date))
+
+        print(end_date)
+        print(type(end_date))
+        keyword_tweets = api.search(q=search, rpp=100, count=numTweets, until = end_date-timedelta(days = i))
+
+        #gathering info about timeline
+        text = "" #String to store users tweets
+        day  = "" #String to check what day of the week this tweet was posted
+
+        print(len(keyword_tweets))
+        for status in keyword_tweets:
+            day = status._json["created_at"][0:3]
+            text = status._json["text"]
+            data = json.loads(json.dumps(comprehend.detect_sentiment(Text=text, LanguageCode='en'), sort_keys=True, indent=4))
+            overallSentiment = data["Sentiment"]
+            positive = data["SentimentScore"]["Positive"]
+            negative = data["SentimentScore"]["Negative"]
+            dataf.append([day, positive, negative])
+            print(status)
+
+
+    dataf.reverse()
+    print(dataf)
+    print("Negative:", negative)
+    print("Positive:", positive)
+
+    df = pd.DataFrame(dataf, columns=['Day', 'positive', 'negative%'])
+
+    df["positive"] = 100 * df["positive"]
+    df["negative%"] = 100 * df["negative%"]
+
+    dfDay = df.groupby(['Day']).mean()
+
+    dfDay = dfDay.reindex(["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"])
+
+    dfDay=dfDay.fillna(0)
+    print(dfDay)
+    dayList = dfDay.index.get_level_values('Day')
+
+    positiveList = dfDay.reset_index()["positive"].tolist()
+    negativeList = dfDay.reset_index()["negative%"].tolist()
+    print(dayList)
+    # Bar graph
+
+    fig1 = plt.figure()
+    plt.bar(dayList, negativeList)
+    # naming the y axis
+    plt.ylabel('Percent')
+
+    plt.title(search + ' Sentiment Analysis!')
+
+    fig1 = mpld3.fig_to_html(fig1)
+    # plt.plot(dayList, positiveList)
+    # barGraph = plt.show()
+
+    #Line graph
+    # Line graph for more days
+
+
+
+
+    fig2 = plt.figure()
+    plt.plot(dayList, positiveList)
+    plt.xlabel('Day of the Week')
+    # naming the y axis
+    plt.ylabel('Percent positivity')
+    plt.title(search + ' Sentiment Analysis!')
+    fig2 = mpld3.fig_to_html(fig2)
+
+    return [fig1,fig2]
+

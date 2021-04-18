@@ -1,0 +1,43 @@
+{% extends 'tweets/home.html' %}
+
+{% block content %}
+    <br>
+
+    <div class="container">
+        <h3>
+            Trending
+            <small class="text-muted">Current most popular searches world wide.</small>
+            <small><a href="{% url 'filter-trends' %}">Change Location</a></small>
+
+        </h3>
+        <hr>
+        <div class="list-group">
+            {% for trend in trends %}
+                <button type="button" class="list-group-item list-group-item-action"><a href="{% url 'display-results' trend.name 'All regions' date "mixed" %}">{{ trend.name }}</a></button>
+            {% endfor %}
+         </div>
+        {% if trends.has_other_pages %}
+            <br>
+            <ul class="pagination">
+                {% if trends.has_previous %}
+                    <li class="page-item"><a class='page-link' href="?page={{ trends.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled page-item"><span class='page-link'>&laquo;</span></li>
+                {% endif %}
+                {% for i in trends.paginator.page_range %}
+                    {% if trends.number == i %}
+                        <li class="active page-item"><span class='page-link'>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li class="page-item"><a class='page-link' href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if trends.has_next %}
+                    <li class="page-item"><a class='page-link' href="?page={{ trends.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled page-item"><span class='page-link'>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'tweets/home.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="jumbotron ">
+        <div class='container'>
+            <form action="/tweets/trending/" method="post">
+                {% csrf_token %}
+                <div class="row align-items-end">
+                    <div class="col-6 col-sm-3">
+                        {{ form.location|as_crispy_field }}
+                    </div>
+                    <div class="col-6 col-sm-3ol">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-search"></i>
+                          </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

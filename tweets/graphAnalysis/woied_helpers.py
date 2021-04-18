@@ -35,8 +35,3 @@ def get_filter_choices():
 
     places = sorted(places, key=lambda x: x[1])     # sort alphabetically
     return tuple(places)                            # turn the list into a tuple for the forms choice
-
-
-
-
-

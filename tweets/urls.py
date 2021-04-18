@@ -14,7 +14,7 @@ urlpatterns = [
     path("about-us/", views.AboutUs.as_view(), name="about-us"),
     path("contact-us/", views.ContactUs.as_view(), name="contact-us"),
     path('trending/', views.FilterTrends.as_view(), name='filter-trends'),
-    path("trending/display/<woeid>/", views.display_trends, name="trending"),
+    path("trending/display/<woeid>/<date>/", views.display_trends, name="trending"),
 
 
 ]

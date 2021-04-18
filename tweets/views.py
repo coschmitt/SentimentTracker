@@ -17,12 +17,15 @@ from tweets.forms import SearchForm
 import datetime as datetime
 import tweepy
 import boto3
-import json
 import matplotlib.pyplot as plt, mpld3
 import pandas as pd
 from datetime import datetime,timedelta
-from io import StringIO
-import math
+import requests
+import json
+
+
+geocode_key = 'AIzaSyAiou_UIwyXs16YbrfMzj1j58mQ-NPExjk'
+
 
 
 
@@ -109,6 +112,7 @@ class Search(FormView):
         region = form.cleaned_data['region']
         end_date = date.today()
         result_type = form.cleaned_data['result_type']
+        print(search, region, end_date, result_type)
         return HttpResponseRedirect(self.get_success_url() + str(search) + '/'+ str(region) + '/'
                                     + str(end_date) + '/' + str(result_type) + '/')
 
@@ -122,12 +126,14 @@ class FilterTrends(FormView):
     success_url = "display/"
 
     def form_valid(self, form):
+        date = datetime.now().strftime('%Y-%m-%d')
         location = form.cleaned_data['location']
-        return HttpResponseRedirect(self.get_success_url() + str(location)+'/')
+        return HttpResponseRedirect(self.get_success_url() + str(location)+'/'+str(date)+'/')
 
 
 def display(request, search=None, region=None, end_date=None, result_type=None):
     graphs = generate_graph(search, region, end_date, result_type)
+
     context = {'graph_bar': graphs[0],
                'graph_line': graphs[1],
                'search': search,
@@ -137,7 +143,7 @@ def display(request, search=None, region=None, end_date=None, result_type=None):
     return render(request, 'tweets/search-results.html', context)
 
 
-def display_trends(request, woeid=1):
+def display_trends(request, woeid=1, date=None):
     trends = get_trending(woeid=woeid)[0].get('trends')
     page = request.GET.get('page', 1)
     paginator = Paginator(trends, 10)
@@ -149,7 +155,7 @@ def display_trends(request, woeid=1):
     except EmptyPage:
         trends = paginator.page(paginator.num_pages)
 
-    return render(request, 'tweets/trending.html', context=dict(trends=trends))
+    return render(request, 'tweets/trending.html', context=dict(trends=trends, date=date))
 
 
 def return_graph(search, region, end_date, result_type):
@@ -199,8 +205,7 @@ def generate_graph(search, region, end_date, result_type):
 
     dataf.reverse()
     print(dataf)
-    print("Negative:", negative)
-    print("Positive:", positive)
+
 
     df = pd.DataFrame(dataf, columns=['Day', 'positive', 'negative%'])
 

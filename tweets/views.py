@@ -128,10 +128,9 @@ class FilterTrends(FormView):
 
 
 def display(request, search=None, region=None, end_date=None, result_type=None):
-    context = {'graph1': generate_graph(search, region, end_date, result_type)[0],
-               'graph2': generate_graph(search, region, end_date, result_type)[1],
-    context = {'graph_bar': return_graph(search, region, end_date, result_type),
-               'graph_line': return_graph(search, region, end_date, result_type),
+    graphs = generate_graph(search, region, end_date, result_type)
+    context = {'graph_bar': graphs[0],
+               'graph_line': graphs[1],
                'search': search,
                'region': region,
                'end_date': end_date,
@@ -247,6 +246,6 @@ def generate_graph(search, region, end_date, result_type):
     plt.ylabel('Percent positivity')
     plt.title(search + ' Sentiment Analysis!')
 
-    lineGraph = plt.show()
+    # lineGraph = plt.show()
 
     return [fig1,fig2]

@@ -16,4 +16,5 @@ urlpatterns = [
     path('trending/', views.FilterTrends.as_view(), name='filter-trends'),
     path("trending/display/<woeid>/", views.display_trends, name="trending"),
 
+
 ]

@@ -6,8 +6,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-import numpy as np
 from datetime import date
 
 from tweets.forms import SearchForm, TrendsFilterForm
@@ -15,17 +13,13 @@ from tweets.graphAnalysis.woied_helpers import get_trending, get_woeid
 from tweets.forms import SearchForm
 import datetime as datetime
 
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from tweets.graphAnalysis.graphSentiment import generate_graph
 
 
 
 def index(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect("/tweets/auth_home")
-    else:       # Unregistered User
-        return HttpResponseRedirect("/tweets/sign-up")
-
+    return HttpResponseRedirect("/tweets/auth_home")
 
 """
     Standard sign up view for creating new users
@@ -108,7 +102,7 @@ class Search(FormView):
 
 
 """
-    View used for tilering the 'trends' page by location
+    View used for filering the 'trends' page by location
 """
 class FilterTrends(FormView):
     form_class = TrendsFilterForm
@@ -123,10 +117,9 @@ class FilterTrends(FormView):
 
 '''Displays graph based on search query.'''
 def display(request, search=None, region=None, end_date=None, result_type=None):
-    graphs, overall_sentiment = generate_graph(search, region, end_date, result_type)  # helper function used for making graphs
+    graph, overall_sentiment = generate_graph(search, region, result_type)  # helper function used for making graphs
 
-    context = {'graph_bar': graphs[0],
-               'graph_line': graphs[1],
+    context = {'graph': graph,
                'search': search,
                'region': region,
                'end_date': end_date,
@@ -136,8 +129,8 @@ def display(request, search=None, region=None, end_date=None, result_type=None):
 
 
 def display_trends(request, woeid=1, date=None):
-    trends = get_trending(woeid=woeid)[0].get('trends') # display trends based on a certain location, or default to 1
-    page = request.GET.get('page', 1)                   # (worldwide trends)
+    trends = get_trending(woeid=woeid)[0].get('trends')  # display trends based on a certain location, or default to 1
+    page = request.GET.get('page', 1)                    # (worldwide trends)
     paginator = Paginator(trends, 10)
 
     # Pagination logic

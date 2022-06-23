@@ -1,108 +1,72 @@
 from datetime import datetime, timedelta
+from keras.preprocessing.sequence import pad_sequences
+from io import BytesIO
+import base64
 
-import mpld3
 import tweepy
-import boto3
-import json
 import matplotlib.pyplot as plt
 import pandas as pd
-import pdb
-from env import TWEEPY_ACCESS_TOKEN, TWEEPY_ACCESS_TOKEN_SECRET, TWEEPY_CONSUMER_KEY, TWEEPY_CONSUMER_SECRET
+import numpy as np
 
-comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
+from env import model, tokenizer, BEARER_TOKEN
 
-auth = tweepy.OAuthHandler(TWEEPY_CONSUMER_KEY, TWEEPY_CONSUMER_SECRET)
-auth.set_access_token(TWEEPY_ACCESS_TOKEN, TWEEPY_ACCESS_TOKEN_SECRET)
 
+auth = tweepy.OAuth2BearerHandler(BEARER_TOKEN)
 api = tweepy.API(auth)
 
 
-def byteCalc(s):
-    return len(s.encode('utf-8'))
+def get_graph():
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    buffer.seek(0)
+    image = buffer.getvalue()
+    graph = base64.b64encode(image)
+    graph = graph.decode("utf-8")
+    buffer.close()
+    return graph
 
 
-# def get_keywords(search, region, end_date, result_type, aws_client, twitter_client):
-#     text_batch = []
-#     num_days = 7
-#     end_date = datetime.strptime(end_date, '%Y-%m-%d')
-#
-#     for day in range(0, num_days):
-#         tweets = twitter_client.search(q=search, rpp=100, count=30, until=end_date-timedelta(days=day),
-#                                        result_type=result_type, region=region)
-#         composite_tweet_string = ""
-#         for tweet in tweets:
-#             body = tweet._json.get('text')
-#             composite_tweet_string += " " + body
-#         text_batch.append(composite_tweet_string)
-#
-#     codes = []
-#     response = aws_client.batch_detect_dominant_language(TextList=text_batch)['ResultList']
-#     for r in response:
-#         codes.append(r['Languages'][0]['LanguageCode'])
-#     dom_language = max(set(codes), key=codes.count)
+def make_plot(x, y, search):
+    plt.switch_backend("AGG")
+    plt.figure(figsize=(10, 5))
+    plt.title(search + ' Sentiment Analysis!')
+    plt.plot(x, y)
+    plt.axhline(y=50, color="r", alpha=.5)
+    plt.xticks(rotation=45)
+    plt.ylim([0, 100])
+    plt.xlabel('Day of the Week')
+    plt.ylabel('Percent positivity')
+    plt.tight_layout()
+    
+    return get_graph()
 
 
-
-def generate_graph(search, region, end_date, result_type):
-    comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
-
-
-    numTweets = 5
+def generate_graph(search, region, result_type):
+    numTweets = 10
     numDays = 7
-    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    end_date = datetime.utcnow()
     dataf = []  # For storing dataframe of valuable information
-    for i in range(0,numDays):
-        keyword_tweets = api.search(q=search, rpp=100, count=numTweets, until=end_date-timedelta(days=i),
-                                    result_type=result_type, region=region)
+    for i in range(0, numDays):
+        toDate = (end_date-timedelta(days=i)).strftime('%Y-%m-%d')
+        keyword_tweets = api.search_tweets(q=search, count=numTweets, lang="en", until=toDate,
+                                           result_type=result_type)
 
         # gathering info about timeline
 
-        for status in keyword_tweets:
-            day = status._json["created_at"][0:3]
-            text = status._json["text"]
-            data = json.loads(json.dumps(comprehend.detect_sentiment(Text=text, LanguageCode='en'), sort_keys=True, indent=4))
-            overallSentiment = data["Sentiment"]
-            positive = data["SentimentScore"]["Positive"]
-            negative = data["SentimentScore"]["Negative"]
-            dataf.append([day, positive, negative])
-
+        tweets = [status._json["text"] for status in keyword_tweets]
+        days = [datetime.strptime(status._json["created_at"], '%a %b %d %H:%M:%S +0000 %Y').date() for status in
+                keyword_tweets]
+        token_tweets = tokenizer.texts_to_sequences(tweets)
+        pad_tweets = pad_sequences(token_tweets, maxlen=300)
+        pred = model.predict(pad_tweets).reshape(1, -1)[0]
+        dataf.extend(list(zip(days, pred, 1 - pred)))
 
     dataf.reverse()
-
-    df = pd.DataFrame(dataf, columns=['Day', 'positive', 'negative%'])
-
+    df = pd.DataFrame(dataf, columns=['Day', 'positive', 'negative'])
     df["positive"] = 100 * df["positive"]
-    df["negative%"] = 100 * df["negative%"]
+    df["negative"] = 100 * df["negative"]
+    dfDay = df.groupby(['Day']).mean().sort_values("Day")
+    dfDay = dfDay.fillna(0)
+    fig = make_plot(list(dfDay.index.astype(str)), dfDay["positive"], search)
 
-    dfDay = df.groupby(['Day']).mean()
-
-    dfDay = dfDay.reindex(["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"])
-
-    dfDay=dfDay.fillna(0)
-    dayList = dfDay.index.get_level_values('Day')
-
-    positiveList = dfDay.reset_index()["positive"].tolist()
-    negativeList = dfDay.reset_index()["negative%"].tolist()
-
-    # Line graph
-
-    fig1 = plt.figure()
-    plt.plot(dayList, negativeList)
-    plt.xlabel('Day of the Week')
-    # naming the y axis
-    plt.ylabel('Percent negativity')
-    plt.title(search + ' Sentiment Analysis!')
-    fig1 = mpld3.fig_to_html(fig1)
-
-    #Line graph
-    # Line graph for more days
-
-    fig2 = plt.figure()
-    plt.plot(dayList, positiveList)
-    plt.xlabel('Day of the Week')
-    # naming the y axis
-    plt.ylabel('Percent positivity')
-    plt.title(search + ' Sentiment Analysis!')
-    fig2 = mpld3.fig_to_html(fig2)
-
-    return [fig1,fig2], overallSentiment
+    return fig, round(df["positive"].mean(), 2)

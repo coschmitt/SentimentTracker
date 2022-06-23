@@ -9,15 +9,20 @@
         <h1 class="display-6">Results for "{{ search }}"</h1>
         <h6 class="display-6">Region: {{region}}</h6>
         <h6 class="display-6">Date: {{end_date}}</h6>
+        {% if sentiment > 51 %}
+            <h6 class="display-6">Overall Sentiment <span class="badge badge-success">{{ sentiment }}</span></h6>
+        {% elif  sentiment < 49 %}
+            <h6 class="display-6">Overall Sentiment <span class="badge badge-danger">{{ sentiment }}</span></h6>
+        {% else %}
+            <h6 class="display-6">Overall Sentiment <span class="badge badge-secondary">{{ sentiment }}</span></h6>
+        {% endif %}
     </div>
     <hr>
-    <div class="row align-items-center">
-        <div class="col-6">
-            {{ graph_bar|safe }}
-        </div>
-        <div class="col-6">
-            {{graph_line|safe}}
-        </div>
+    <img src="data:image/png;base64, {{ graph|safe }}" alt="Public Eye">
+{#    <div class="container">#}
 
-    </div>
+{#        <div class="col-6">#}
+{#            {{graph_line|safe}}#}
+{#        </div>#}
+{#    </div>#}
 {% endblock %}

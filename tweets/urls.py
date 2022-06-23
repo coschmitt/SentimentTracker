@@ -4,7 +4,7 @@ from django.urls import path
 from tweets import views
 
 urlpatterns = [
-    path("", views.index, name='home'),
+    path("", views.home, name='home'),
     path("sign-up/", views.SignUp.as_view(), name="sign-up"),
     path("sign-in/", views.SignIn.as_view(), name="sign-in"),
     path("auth_home/", views.home, name="auth_home"),
@@ -15,6 +15,4 @@ urlpatterns = [
     path("contact-us/", views.ContactUs.as_view(), name="contact-us"),
     path('trending/', views.FilterTrends.as_view(), name='filter-trends'),
     path("trending/display/<woeid>/<date>/", views.display_trends, name="trending"),
-
-
 ]
